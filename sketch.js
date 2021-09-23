@@ -24,10 +24,7 @@ version comments draft
  */
 
 let font
-let a
-let b
-let c
-let d
+let a, b, c, d
 
 function preload() {
     font = loadFont('fonts/Meiryo-01.ttf');
@@ -37,6 +34,7 @@ function setup() {
     createCanvas(600, 300)
     colorMode(HSB, 360, 100, 100, 100)
     background(0, 0, 30)
+    textFont(font, 16)
     a = new p5.Vector(100, height/2)
     c = new p5.Vector(400, 10)
     d = new p5.Vector(width-100, height/2)
@@ -44,7 +42,25 @@ function setup() {
 
 function draw() {
     background(0, 0, 30)
-    bezier_example()
+    // t ranges from 0 to 1
+    let t = map(mouseX, 0, width, 0, 1)
+    let px = clerp(a.x, d.x, t)
+    let py = clerp(a.y, d.y, t)
+    // Do we know where t is?
+    noStroke()
+    fill(0, 0, 100)
+    text("t: " + t, 30, 30)
+    stroke(0, 0, 100)
+    strokeWeight(4)
+    circle(d.x, d.y, 16)
+    circle(a.x, a.y, 16)
+    point(px, py)
+}
+
+// my linear interpolation function (Lerp)
+function clerp(a, b, t) {
+    // We want to go 1-t times as far to a and t times as far to b
+    return (1-t)*a + (t)*b
 }
 
 function bezier_example() {
