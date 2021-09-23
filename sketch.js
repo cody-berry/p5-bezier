@@ -6,8 +6,9 @@ p5-bezier, based on videos on the Bezier curve from Daniel Shiffman and
  Freya Holmér
 
 version comments draft
-    bezier function to make mouse-controllable control point, cubic
-    implementing lerp from scratch: one dimension (number line)
+.   bezier function to make mouse-controllable control point, cubic
+.   implementing lerp from scratch: one dimension (number line)
+
     quadratic lerp method: 3 lerp calls between 3 points
     cubic lerp method
         begin +end shape
@@ -42,6 +43,17 @@ function setup() {
 
 function draw() {
     background(0, 0, 30)
+    clerp_test()
+}
+
+// my linear interpolation function (Lerp)
+function clerp(a, b, t) {
+    // We want to go 1-t times as far to a and t times as far to b
+    return (1-t)*a + (t)*b
+}
+
+// tests clerp
+function clerp_test() {
     // t ranges from 0 to 1
     let t = map(mouseX, 0, width, 0, 1)
     let px = clerp(a.x, d.x, t)
@@ -55,12 +67,6 @@ function draw() {
     circle(d.x, d.y, 16)
     circle(a.x, a.y, 16)
     point(px, py)
-}
-
-// my linear interpolation function (Lerp)
-function clerp(a, b, t) {
-    // We want to go 1-t times as far to a and t times as far to b
-    return (1-t)*a + (t)*b
 }
 
 function bezier_example() {
