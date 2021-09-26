@@ -9,6 +9,7 @@ version comments draft
 .   bezier function to make mouse-controllable control point, cubic
 .   implementing lerp from scratch: one dimension (number line)
     2D lerp with point and diagonal
+    First point on first quarter and second point on last quarter
     quadratic lerp method: 3 lerp calls between 3 points
     cubic lerp method
         begin +end shape
@@ -25,31 +26,45 @@ version comments draft
  */
 
 let font
-let a, b, c, d
 
 function preload() {
     font = loadFont('fonts/Meiryo-01.ttf');
 }
 
+class Quadratic_Bezier_Example {
+    constructor() {
+        colorMode(HSB, 360, 100, 100, 100)
+        background(0, 0, 30)
+        textFont(font, 16)
+        this.a = new p5.Vector(random(width), random(height))
+        this.c = new p5.Vector(400, 10)
+        this.d = new p5.Vector(random(width), random(height))
+
+    }
+
+    draw() {
+        stroke(0, 0, 100)
+        quadratic_bezier(this.a, this.c, this.d)
+        // where are the anchor and control points?
+        fill(0, 0, 100)
+        // anchor points:
+        circle(this.a.x, this.a.y, 16)
+        circle(this.d.x, this.d.y, 16)
+        // control points:
+        circle(this.c.x, this.c.y, 16)
+    }
+}
+
+let example
+
 function setup() {
     createCanvas(600, 300)
-    colorMode(HSB, 360, 100, 100, 100)
-    background(0, 0, 30)
-    textFont(font, 16)
-    a = new p5.Vector(random(width), random(height))
-    c = new p5.Vector(400, 10)
-    d = new p5.Vector(random(width), random(height))
+    example = new Quadratic_Bezier_Example()
 }
 
 function draw() {
     background(0, 0, 30)
-    textAlign(LEFT)
-    twoD_clerp_test()
-    fill(0, 0, 0)
-    noStroke()
-    textAlign(CENTER)
-    // text('a', a.x + 25, a.y)
-    // text('d', d.x + 21, d.y)
+    example.draw()
 }
 
 // my linear interpolation function (Lerp)
@@ -138,6 +153,33 @@ function twoD_clerp_test() {
     stroke(210, 80, 100)
     strokeWeight(20)
     point(p.x, p.y)
+}
+
+// returns a point on the quadratic bezier curve at a given t-value
+function quadratic(start, control, end, t) {
+    // we need a lerp between start and control
+    let a = twoD_clerp(start, control, t)
+    // we need a lerp between control and end
+    let b = twoD_clerp(control, end, t)
+    // we need a lerp between those two points, and those trace the
+    // quadratic bezier curve
+    let p = twoD_clerp(a, b, t)
+    return p
+}
+
+// draws the quadratic bezier curve
+function quadratic_bezier(start, control, end) {
+    // we need to have different t values
+    beginShape()
+    noFill()
+    strokeWeight(4)
+    stroke(0, 0, 100)
+    for (let t = 0; t <= 1; t += 0.01) {
+        // we need to get the quadratic point that's on the curve
+        let p = quadratic(start, control, end, t)
+        vertex(p.x, p.y)
+    }
+    endShape()
 }
 
 function bezier_example() {
