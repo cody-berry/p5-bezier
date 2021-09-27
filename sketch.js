@@ -37,7 +37,7 @@ class Quadratic_Bezier_Example {
         background(0, 0, 30)
         textFont(font, 16)
         this.a = new p5.Vector(random(width), random(height))
-        this.c = new p5.Vector(400, 10)
+        this.c = new p5.Vector(random(width), random(height))
         this.d = new p5.Vector(random(width), random(height))
 
     }
@@ -55,11 +55,42 @@ class Quadratic_Bezier_Example {
     }
 }
 
+class Cubic_Bezier_Example {
+    constructor() {
+        colorMode(HSB, 360, 100, 100, 100)
+        background(0, 0, 30)
+        textFont(font, 16)
+        this.a = new p5.Vector(random(width), random(height))
+        this.b = new p5.Vector(random(width), random(height))
+        this.c = new p5.Vector(random(width), random(height))
+        this.d = new p5.Vector(random(width), random(height))
+
+    }
+
+    draw() {
+        stroke(0, 0, 100)
+        this.b = new p5.Vector(mouseX, mouseY)
+        cubic_bezier(this.a, this.b, this.c, this.d)
+        // where are the anchor and control points?
+        fill(0, 0, 100)
+        // anchor points:
+        circle(this.a.x, this.a.y, 16)
+        circle(this.d.x, this.d.y, 16)
+        // control points:
+        circle(this.b.x, this.b.y, 16)
+        circle(this.c.x, this.c.y, 16)
+        // related line segments:
+        line(this.a.x, this.a.y, this.b.x, this.b.y)
+        line(this.b.x, this.b.y, this.c.x, this.c.y)
+        line(this.c.x, this.c.y, this.d.x, this.d.y)
+    }
+}
+
 let example
 
 function setup() {
     createCanvas(600, 300)
-    example = new Quadratic_Bezier_Example()
+    example = new Cubic_Bezier_Example()
 }
 
 function draw() {
@@ -182,6 +213,29 @@ function quadratic_bezier(start, control, end) {
     endShape()
 }
 
+// returns a point on the cubic bezier curve
+function cubic(start, control1, control2, end, t){
+    let a = quadratic(start, control1, control2, t)
+    let b = quadratic(control1, control2, end, t)
+    return twoD_clerp(a, b, t)
+}
+
+// draws the cubic bezier curve
+function cubic_bezier(start, control1, control2, end) {
+    // we need to have different t values
+    beginShape()
+    noFill()
+    strokeWeight(4)
+    stroke(0, 0, 100)
+    for (let t = 0; t <= 1; t += 0.01) {
+        // we need to get the quadratic point that's on the curve
+        let p = cubic(start, control1, control2, end, t)
+        vertex(p.x, p.y)
+    }
+    endShape()
+}
+
+// draws the cubic bezier curve using the bezier() function
 function bezier_example() {
     // Bezier tries to make itself a filled shape!
     noFill()
