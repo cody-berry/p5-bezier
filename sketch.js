@@ -8,13 +8,13 @@ p5-bezier, based on videos on the Bezier curve from Daniel Shiffman and
 version comments draft
 .   bezier function to make mouse-controllable control point, cubic
 .   implementing lerp from scratch: one dimension (number line)
-    2D lerp with point and diagonal
-    First point on first quarter and second point on last quarter
-    quadratic lerp method: 3 lerp calls between 3 points
-    cubic lerp method
-        begin +end shape
-    bezier lerp mesh with t
-    refactor code for p5.Vector.lerp
+.   2D lerp with point and diagonal
+.   First point on first quarter and second point on last quarter
+.   quadratic lerp method: 3 lerp calls between 3 points
+.   cubic lerp method
+.       begin +end shape
+.   bezier lerp mesh with t
+.   refactor code for p5.Vector.lerp
     make each vertex a particle with velocity, edges
     advanced project:
         drag and drop demo
@@ -189,9 +189,9 @@ function twoD_clerp_test() {
 // returns a point on the quadratic bezier curve at a given t-value
 function quadratic(start, control, end, t) {
     // we need a lerp between start and control
-    let a = twoD_clerp(start, control, t)
+    let a = p5.Vector.lerp(start, control, t)
     // we need a lerp between control and end
-    let b = twoD_clerp(control, end, t)
+    let b = p5.Vector.lerp(control, end, t)
     // we need a lerp between those two points, and those trace the
     // quadratic bezier curve
     let p = twoD_clerp(a, b, t)
@@ -217,7 +217,7 @@ function quadratic_bezier(start, control, end) {
 function cubic(start, control1, control2, end, t){
     let a = quadratic(start, control1, control2, t)
     let b = quadratic(control1, control2, end, t)
-    return twoD_clerp(a, b, t)
+    return p5.Vector.lerp(a, b, t)
 }
 
 // draws the cubic bezier curve
@@ -239,7 +239,7 @@ function cubic_bezier(start, control1, control2, end) {
 function bezier_example() {
     // Bezier tries to make itself a filled shape!
     noFill()
-    b = new p5.Vector(mouseX, mouseY)
+    let b = new p5.Vector(mouseX, mouseY)
     bezier(a.x, a.y, b.x, b.y, c.x, c.y, d.x, d.y)
     fill(0, 0, 100)
     // the code below shows the circle so that we know where the anchor and
