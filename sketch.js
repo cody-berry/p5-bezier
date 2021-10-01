@@ -113,14 +113,43 @@ class Quadratic_Example {
     }
 }
 
+class Cubic_Example {
+    constructor() {
+        colorMode(HSB, 360, 100, 100, 100)
+        background(0, 0, 30)
+        textFont(font, 16)
+        this.a = new draggableVertex(random(width), random(height), 15)
+        this.b = new draggableVertex(random(width), random(height), 15)
+        this.c = new draggableVertex(random(width), random(height), 15)
+        this.d = new draggableVertex(random(width), random(height), 15)
+
+    }
+
+    draw() {
+        stroke(0, 0, 100)
+        cubic_bezier(this.a, this.b, this.c, this.d)
+        // where are the anchor and control points?
+        // anchor points:
+        this.a.show(mouseX, mouseY)
+        this.d.show(mouseX, mouseY)
+        // control points:
+        this.b.show(mouseX, mouseY)
+        this.c.show(mouseX, mouseY)
+        // related line segments:
+        line(this.a.x, this.a.y, this.b.x, this.b.y)
+        line(this.b.x, this.b.y, this.c.x, this.c.y)
+        line(this.c.x, this.c.y, this.d.x, this.d.y)
+    }
+}
+
 let example
 
 function setup() {
     createCanvas(600, 300)
     // example = new Cubic_Bezier_Example()
     // example = new Quadratic_Bezier_Example()
-    example = new Quadratic_Example()
-    vertices = [example.a, example.c, example.d]
+    example = new Cubic_Example()
+    vertices = [example.a, example.b, example.c, example.d]
 }
 
 function draw() {
