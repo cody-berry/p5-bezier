@@ -1,6 +1,7 @@
 html, body {
   margin: 0;
   padding: 0;
+  background-color: darkgray;
 }
 
 canvas {
@@ -12,6 +13,5 @@ main {
   width: auto;
   height: 100%;
   margin: auto;
-  background-color: darkgrey;
   /*border: 5px solid white;*/
 }

@@ -15,17 +15,16 @@ version comments draft
 .       begin +end shape
 .   bezier lerp mesh with t
 .   refactor code for p5.Vector.lerp
-    make each vertex a particle with velocity, edges
+.   make each vertex a particle with velocity, edges
     advanced project:
-        drag and drop demo
-            add hover effect
-        transfer drag and drop code into p5-bezier
-        extend draggableVertex class from p5.Vectors
+        quadratic example
+        cubic example
         super-advanced project:
             particles explode when dragged on to another
  */
 
 let font
+let vertices
 
 function preload() {
     font = loadFont('fonts/Meiryo-01.ttf');
@@ -52,6 +51,9 @@ class Quadratic_Bezier_Example {
         circle(this.d.x, this.d.y, 16)
         // control points:
         circle(this.c.x, this.c.y, 16)
+        // related line segments:
+        line(this.a.x, this.a.y, this.c.x, this.c.y)
+        line(this.c.x, this.c.y, this.d.x, this.d.y)
     }
 }
 
@@ -60,28 +62,53 @@ class Cubic_Bezier_Example {
         colorMode(HSB, 360, 100, 100, 100)
         background(0, 0, 30)
         textFont(font, 16)
-        this.a = new p5.Vector(random(width), random(height))
-        this.b = new p5.Vector(random(width), random(height))
-        this.c = new p5.Vector(random(width), random(height))
-        this.d = new p5.Vector(random(width), random(height))
+        this.a = new BouncingVertex(random(width), random(height), 15, color(0, 50, 100))
+        this.b = new BouncingVertex(random(width), random(height), 15, color(210, 80, 100))
+        this.c = new BouncingVertex(random(width), random(height), 15, color(90, 60, 100))
+        this.d = new BouncingVertex(random(width), random(height), 15, color(50, 90, 100))
+        this.vertices = [this.a, this.b, this.c, this.d]
+    }
+
+    draw() {
+        stroke(0, 0, 100)
+        cubic_bezier(this.a, this.b, this.c, this.d)
+        // where are the anchor and control points?
+        fill(0, 0, 100)
+
+        this.vertices.forEach(v => v.update())
+        this.vertices.forEach(v => v.show())
+        this.vertices.forEach(v => v.edges())
+
+        // related line segments:
+        strokeWeight(1)
+        line(this.a.x, this.a.y, this.b.x, this.b.y)
+        line(this.b.x, this.b.y, this.c.x, this.c.y)
+        line(this.c.x, this.c.y, this.d.x, this.d.y)
+    }
+}
+
+class Quadratic_Example {
+    constructor() {
+        colorMode(HSB, 360, 100, 100, 100)
+        background(0, 0, 30)
+        textFont(font, 16)
+        this.a = new draggableVertex(random(width), random(height), 15)
+        this.c = new draggableVertex(random(width), random(height), 15)
+        this.d = new draggableVertex(random(width), random(height), 15)
 
     }
 
     draw() {
         stroke(0, 0, 100)
-        this.b = new p5.Vector(mouseX, mouseY)
-        cubic_bezier(this.a, this.b, this.c, this.d)
+        quadratic_bezier(this.a, this.c, this.d)
         // where are the anchor and control points?
-        fill(0, 0, 100)
         // anchor points:
-        circle(this.a.x, this.a.y, 16)
-        circle(this.d.x, this.d.y, 16)
+        this.a.show(mouseX, mouseY)
+        this.d.show(mouseX, mouseY)
         // control points:
-        circle(this.b.x, this.b.y, 16)
-        circle(this.c.x, this.c.y, 16)
+        this.c.show(mouseX, mouseY)
         // related line segments:
-        line(this.a.x, this.a.y, this.b.x, this.b.y)
-        line(this.b.x, this.b.y, this.c.x, this.c.y)
+        line(this.a.x, this.a.y, this.c.x, this.c.y)
         line(this.c.x, this.c.y, this.d.x, this.d.y)
     }
 }
@@ -90,12 +117,39 @@ let example
 
 function setup() {
     createCanvas(600, 300)
-    example = new Cubic_Bezier_Example()
+    // example = new Cubic_Bezier_Example()
+    // example = new Quadratic_Bezier_Example()
+    example = new Quadratic_Example()
+    vertices = [example.a, example.c, example.d]
 }
 
 function draw() {
-    background(0, 0, 30)
+    background(0, 0, 30, 100)
     example.draw()
+    vertices.forEach(v => v.hovering = !!v.contains(mouseX, mouseY))
+}
+
+function mousePressed() {
+    vertices.forEach(v => v.pressed(mouseX, mouseY))
+}
+
+
+// call all our Vertices and make sure they know nothing's clicking them
+function mouseReleased() {
+    vertices.forEach(v => v.notPressed())
+}
+
+
+function mouseMoved() {
+    /*
+      we can check if we're mousing over any rectangle here
+      on mouseMoved(), check contains foreach r in rectangles
+        if contains:
+            set hover to true
+        else set hover to false
+
+      in show(), fill transparent if hover is true
+     */
 }
 
 // my linear interpolation function (Lerp)
@@ -194,7 +248,7 @@ function quadratic(start, control, end, t) {
     let b = p5.Vector.lerp(control, end, t)
     // we need a lerp between those two points, and those trace the
     // quadratic bezier curve
-    let p = twoD_clerp(a, b, t)
+    let p = p5.Vector.lerp(a, b, t)
     return p
 }
 
