@@ -125,20 +125,60 @@ class Cubic_Example {
 
     }
 
-    draw() {
-        stroke(0, 0, 100)
-        cubic_bezier(this.a, this.b, this.c, this.d)
-        // where are the anchor and control points?
-        // anchor points:
-        this.a.show(mouseX, mouseY)
-        this.d.show(mouseX, mouseY)
-        // control points:
-        this.b.show(mouseX, mouseY)
-        this.c.show(mouseX, mouseY)
+    show() {
+        stroke(0, 0, 60)
+        // we need to have different max t values so that we can appropriately
+        // draw our lines
+        let max_t = 0.5*sin(frameCount/100) + 0.5
         // related line segments:
         line(this.a.x, this.a.y, this.b.x, this.b.y)
         line(this.b.x, this.b.y, this.c.x, this.c.y)
         line(this.c.x, this.c.y, this.d.x, this.d.y)
+        // we want our circles to get rid of anything inside them, so we should
+        // fill with the background color.
+        fill(0, 0, 30, 100)
+        // where are the anchor and control points?
+        // anchor points:
+        this.a.show(mouseX, mouseY)
+        // I ran into a problem where some circles' hovering attribute fill
+        // will affect the next one.
+        fill(0, 0, 30, 100)
+        this.d.show(mouseX, mouseY)
+        // control points:
+        fill(0, 0, 30, 100)
+        this.b.show(mouseX, mouseY)
+        fill(0, 0, 30, 100)
+        this.c.show(mouseX, mouseY)
+        // now let's draw the lerp points!
+        fill(0, 0, 30, 100)
+        stroke(210, 100, 80)
+
+
+        // we always want to lerp on our max t
+        let A = p5.Vector.lerp(this.a, this.b, max_t)
+        // we do the same for c, so we've complete our first level for our
+        // first quadratic
+        let B = p5.Vector.lerp(this.b, this.c, max_t)
+        // we do the same for d, so we've completed our first level for our
+        // second quadratic
+        let C = p5.Vector.lerp(this.c, this.d, max_t)
+        // and now we can draw the lines that lerp between those.
+        line()
+        // and now we can show the points!
+        circle(A.x, A.y, 16)
+        circle(B.x, B.y, 16)
+        circle(C.x, C.y, 16)
+
+        beginShape()
+        noFill()
+        strokeWeight(4)
+        stroke(0, 0, 100)
+        for (let t = 0; t <= max_t; t += 0.01) {
+            // we need to get the quadratic point that's on the curve
+            let p = cubic(this.a, this.b, this.c, this.d, t)
+            vertex(p.x, p.y)
+        }
+        endShape()
     }
 }
 
@@ -154,8 +194,8 @@ function setup() {
 
 function draw() {
     background(0, 0, 30, 100)
-    example.draw()
-    vertices.forEach(v => v.hovering = !!v.contains(mouseX, mouseY))
+    example.show()
+    vertices.forEach(v => v.hovering = v.contains(mouseX, mouseY))
 }
 
 function mousePressed() {

@@ -17,8 +17,6 @@ class draggableVertex extends p5.Vector {
     // (x, y) refers to pointer_x and pointer_y, the coordinates of the
     // mouse dragging; this method will be called as show(mouseX, mouseY)
     show(x, y) {
-        noFill()
-        stroke(0, 0, 100)
         if (this.dragging) {
             this.x = x + this.offsetX
             this.y = y + this.offsetY
