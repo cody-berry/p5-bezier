@@ -129,27 +129,49 @@ class Cubic_Example {
 
     show() {
         let max_t = 0.5*sin(frameCount/100) + 0.5
-        // Let's draw the curve.
-        beginShape()
-        noFill()
-        strokeWeight(4)
-        stroke(0, 0, 100)
-        fill(0, 0, 30)
-        let p // we're going to be redefining p later
-        for (let t = 0; t <= max_t; t += 0.001) {
-            // we need to get the cubic point that's on the curve
-            p = cubic(this.a, this.b, this.c, this.d, t)
-            vertex(p.x, p.y)
-        }
-        endShape()
-        // now that p is at the maximum point on the bezier curve, we can
-        // actually use it to draw the last point on the bezier curve
-        circle(p.x, p.y, 16)
 
+        // Our blue and red lines should disappear when the bezier curve
+        // gets too close to the anchor point.
+
+        // First, our dots.
+        stroke(0, 0, 60)
+        // we need to have different max t values so that we can appropriately
+        // draw our lines
+        // related line segments:
+        line(this.a.x, this.a.y, this.b.x, this.b.y)
+        line(this.b.x, this.b.y, this.c.x, this.c.y)
+        line(this.c.x, this.c.y, this.d.x, this.d.y)
+        // we want our circles to get rid of anything inside them, so we should
+        // fill with the background color.
+        fill(0, 0, 30, 100)
+        // where are the anchor and control points?
+        // anchor points:
+        this.a.show(mouseX, mouseY)
+        // I ran into a problem where some circles' hovering attribute fill
+        // will affect the next one.
+        fill(0, 0, 30, 100)
+        this.d.show(mouseX, mouseY)
+        // control points:
+        fill(0, 0, 30, 100)
+        this.b.show(mouseX, mouseY)
+        fill(0, 0, 30, 100)
+        this.c.show(mouseX, mouseY)
 
         // now let's draw the lerp points!
-        fill(0, 0, 30, 100)
-        stroke(210, 100, 80)
+        let alpha_value = 100
+        // If t gets too close to zero...
+        if (max_t < 0.05 && max_t > 0) {
+            // ...then we should map our max t from 0 to 5 to 0 to 100.
+            alpha_value = map(max_t, 0, 0.05, 0, 100)
+        }
+        // If t gets too close to a hundred...
+        if (max_t > 0.95 && max_t < 1.00) {
+            // ...then we should map our max t from 95 to 100 to 100 to 0.
+            alpha_value = map(max_t, 0.95, 1.00, 100, 0)
+        }
+
+        fill(0, 0, 30, alpha_value)
+        stroke(210, 100, 80, alpha_value)
 
 
         // we always want to lerp on our max t
@@ -177,7 +199,7 @@ class Cubic_Example {
 
 
         // We can use our earlier points, A, B, and C, to define our lerps.
-        stroke(0, 100, 80)
+        stroke(0, 100, 80, alpha_value)
         let D = p5.Vector.lerp(A, B, max_t)
         let E = p5.Vector.lerp(B, C, max_t)
         line(D.x, D.y, E.x, E.y)
@@ -185,30 +207,23 @@ class Cubic_Example {
         circle(D.x, D.y, 15)
         circle(E.x, E.y, 15)
 
-        // And finally, our dots.
-        stroke(0, 0, 60)
-        // we need to have different max t values so that we can appropriately
-        // draw our lines
-        // related line segments:
-        line(this.a.x, this.a.y, this.b.x, this.b.y)
-        line(this.b.x, this.b.y, this.c.x, this.c.y)
-        line(this.c.x, this.c.y, this.d.x, this.d.y)
-        // we want our circles to get rid of anything inside them, so we should
-        // fill with the background color.
-        fill(0, 0, 30, 100)
-        // where are the anchor and control points?
-        // anchor points:
-        this.a.show(mouseX, mouseY)
-        // I ran into a problem where some circles' hovering attribute fill
-        // will affect the next one.
-        fill(0, 0, 30, 100)
-        this.d.show(mouseX, mouseY)
-        // control points:
-        fill(0, 0, 30, 100)
-        this.b.show(mouseX, mouseY)
-        fill(0, 0, 30, 100)
-        this.c.show(mouseX, mouseY)
 
+        // Finally, let's draw the curve.
+        beginShape()
+        noFill()
+        strokeWeight(4)
+        stroke(0, 0, 100)
+        fill(0, 0, 30)
+        let p // we're going to be redefining p later
+        for (let t = 0; t <= max_t; t += 0.001) {
+            // we need to get the cubic point that's on the curve
+            p = cubic(this.a, this.b, this.c, this.d, t)
+            vertex(p.x, p.y)
+        }
+        endShape()
+        // now that p is at the maximum point on the bezier curve, we can
+        // actually use it to draw the last point on the bezier curve
+        circle(p.x, p.y, 16)
     }
 }
 
