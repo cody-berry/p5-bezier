@@ -118,18 +118,77 @@ class Cubic_Example {
         colorMode(HSB, 360, 100, 100, 100)
         background(0, 0, 30)
         textFont(font, 16)
-        this.a = new draggableVertex(random(width), random(height), 15)
-        this.b = new draggableVertex(random(width), random(height), 15)
-        this.c = new draggableVertex(random(width), random(height), 15)
-        this.d = new draggableVertex(random(width), random(height), 15)
+        // we want the radius of each circle to be less than 8 so that when
+        // our bezier curve point goes to 0, we can still see it.
+        this.a = new draggableVertex(130, height - 50, 10)
+        this.b = new draggableVertex(180, 100, 10)
+        this.c = new draggableVertex(width - 180, 100, 10)
+        this.d = new draggableVertex(width - 130, height - 50, 10)
 
     }
 
     show() {
+        let max_t = 0.5*sin(frameCount/100) + 0.5
+        // Let's draw the curve.
+        beginShape()
+        noFill()
+        strokeWeight(4)
+        stroke(0, 0, 100)
+        fill(0, 0, 30)
+        let p // we're going to be redefining p later
+        for (let t = 0; t <= max_t; t += 0.001) {
+            // we need to get the cubic point that's on the curve
+            p = cubic(this.a, this.b, this.c, this.d, t)
+            vertex(p.x, p.y)
+        }
+        endShape()
+        // now that p is at the maximum point on the bezier curve, we can
+        // actually use it to draw the last point on the bezier curve
+        circle(p.x, p.y, 16)
+
+
+        // now let's draw the lerp points!
+        fill(0, 0, 30, 100)
+        stroke(210, 100, 80)
+
+
+        // we always want to lerp on our max t
+        let A = p5.Vector.lerp(this.a, this.b, max_t)
+        // we do the same for c, so we've complete our first level for our
+        // first quadratic
+        let B = p5.Vector.lerp(this.b, this.c, max_t)
+        // we do the same for d, so we've completed our first level for our
+        // second quadratic
+        let C = p5.Vector.lerp(this.c, this.d, max_t)
+        // and now we can draw the lines that lerp between those.
+        line(A.x, A.y, B.x, B.y)
+        line(B.x, B.y, C.x, C.y)
+        // and now we can show the points! Just make sure the radius is more
+        // than 6 and less than 8 so that we can actually see both the
+        // first-order lerp point and the bezier curve point.
+        circle(A.x, A.y, 14)
+        circle(B.x, B.y, 14)
+        circle(C.x, C.y, 14)
+
+        // Now we can add our red points, our second-order lerp points! This
+        // time there are only two of them, since 3 inputs (one t, so really
+        // 2 point inputs) turn into 1, 3 - 1 = 2; thus there will be only 2
+        // red points.
+
+
+        // We can use our earlier points, A, B, and C, to define our lerps.
+        stroke(0, 100, 80)
+        let D = p5.Vector.lerp(A, B, max_t)
+        let E = p5.Vector.lerp(B, C, max_t)
+        line(D.x, D.y, E.x, E.y)
+        fill(0, 0, 30)
+        circle(D.x, D.y, 15)
+        circle(E.x, E.y, 15)
+
+        // And finally, our dots.
         stroke(0, 0, 60)
         // we need to have different max t values so that we can appropriately
         // draw our lines
-        let max_t = 0.5*sin(frameCount/100) + 0.5
         // related line segments:
         line(this.a.x, this.a.y, this.b.x, this.b.y)
         line(this.b.x, this.b.y, this.c.x, this.c.y)
@@ -149,36 +208,7 @@ class Cubic_Example {
         this.b.show(mouseX, mouseY)
         fill(0, 0, 30, 100)
         this.c.show(mouseX, mouseY)
-        // now let's draw the lerp points!
-        fill(0, 0, 30, 100)
-        stroke(210, 100, 80)
 
-
-        // we always want to lerp on our max t
-        let A = p5.Vector.lerp(this.a, this.b, max_t)
-        // we do the same for c, so we've complete our first level for our
-        // first quadratic
-        let B = p5.Vector.lerp(this.b, this.c, max_t)
-        // we do the same for d, so we've completed our first level for our
-        // second quadratic
-        let C = p5.Vector.lerp(this.c, this.d, max_t)
-        // and now we can draw the lines that lerp between those.
-        line()
-        // and now we can show the points!
-        circle(A.x, A.y, 16)
-        circle(B.x, B.y, 16)
-        circle(C.x, C.y, 16)
-
-        beginShape()
-        noFill()
-        strokeWeight(4)
-        stroke(0, 0, 100)
-        for (let t = 0; t <= max_t; t += 0.01) {
-            // we need to get the quadratic point that's on the curve
-            let p = cubic(this.a, this.b, this.c, this.d, t)
-            vertex(p.x, p.y)
-        }
-        endShape()
     }
 }
 

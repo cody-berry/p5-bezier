@@ -22,7 +22,7 @@ class draggableVertex extends p5.Vector {
             this.y = y + this.offsetY
         }
         if (this.hovering) {
-            fill(0, 0, 100, 20)
+            fill(0, 0, 40)
         }
         circle(this.x, this.y, this.r*2)
     }
