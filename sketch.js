@@ -16,9 +16,12 @@ version comments draft
 .   bezier lerp mesh with t
 .   refactor code for p5.Vector.lerp
 .   make each vertex a particle with velocity, edges
-    advanced project:
-        quadratic example
-        cubic example
+..  advanced project:
+.       quadratic example
+.       cubic example
+        .
+        .
+        .
         super-advanced project:
             particles explode when dragged on to another
  */
@@ -113,6 +116,7 @@ class Quadratic_Example {
     }
 }
 
+// Freya's cubic bezier curve animation.
 class Cubic_Example {
     constructor() {
         colorMode(HSB, 360, 100, 100, 100)
@@ -127,13 +131,20 @@ class Cubic_Example {
 
     }
 
+
+    // TODO: When the lerp points get too far away from the left anchor
+    //  point, part of it disappears. Let's fix that!
     show() {
-        let max_t = 0.5*sin(frameCount/100) + 0.5
+        // if we do sin() instead of cos(), our wave would start at 0.5.
+        // That's terrible! If we do a plain cos(), our wave would start at
+        // 1. The only way we'll get it to start at 0 is to use -cos().
+        let max_t = -0.5*cos(frameCount/100) + 0.5
 
         // Our blue and red lines should disappear when the bezier curve
         // gets too close to the anchor point.
 
         // First, our dots.
+        fill(0, 0, 30)
         stroke(0, 0, 60)
         // we need to have different max t values so that we can appropriately
         // draw our lines
@@ -213,7 +224,6 @@ class Cubic_Example {
         noFill()
         strokeWeight(4)
         stroke(0, 0, 100)
-        fill(0, 0, 30)
         let p // we're going to be redefining p later
         for (let t = 0; t <= max_t; t += 0.001) {
             // we need to get the cubic point that's on the curve
@@ -221,6 +231,7 @@ class Cubic_Example {
             vertex(p.x, p.y)
         }
         endShape()
+        fill(0, 0, 30)
         // now that p is at the maximum point on the bezier curve, we can
         // actually use it to draw the last point on the bezier curve
         circle(p.x, p.y, 16)
@@ -234,7 +245,9 @@ function setup() {
     // example = new Cubic_Bezier_Example()
     // example = new Quadratic_Bezier_Example()
     example = new Cubic_Example()
-    vertices = [example.a, example.b, example.c, example.d]
+    vertices = [example.a, example.b, example.c, example.d] // sometime
+    // we'll have to deal with many vertices, so we should store all of them
+    // in a list to make it so that we don't have to have duplicate code.
 }
 
 function draw() {
@@ -397,7 +410,7 @@ function cubic_bezier(start, control1, control2, end) {
     stroke(0, 0, 100)
     for (let t = 0; t <= 1; t += 0.01) {
         // we need to get the quadratic point that's on the curve
-        let p = cubic(start, control1, control2, end, t)
+        const p = cubic(start, control1, control2, end, t)
         vertex(p.x, p.y)
     }
     endShape()
